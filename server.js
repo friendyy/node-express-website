@@ -1,9 +1,16 @@
 const express = require("express");
-const people = require("./people.json");
-
+//const people = require("./people.json"); //we are using MongoDB instead of json file
+const MongoClient = require('mongodb').MongoClient;; 
 const app = express();
+const dbDetails = require("./database");  //This has connection url and db name only.
 
-app.set("view engine", "pug");
+
+MongoClient.connect(dbDetails.url, function(err, db) {
+  if (err) throw err;
+  var dbo = db.db(dbDetails.database);
+  dbo.collection(dbDetails.collection).find({}).toArray(function(err, result)  {
+    if (err) throw err;
+    app.set("view engine", "pug");
 
 // serve static files from the `public` folder
 app.use(express.static(__dirname + "/public"));
@@ -11,18 +18,22 @@ app.use(express.static(__dirname + "/public"));
 app.get("/", (req, res) => {
   res.render("index", {
     title: "Homepage",
-    people: people.profiles
+    people: result
   });
 });
 
 app.get("/profile", (req, res) => {
-  const person = people.profiles.find(p => p.id === req.query.id);
+  const person = result.find(p => p.id === req.query.id);
   res.render("profile", {
     title: `About ${person.firstname} ${person.lastname}`,
     person
   });
 });
- 
-const server = app.listen(process.env.PORT, () => {
+    db.close();
+  });
+});
+
+
+const server = app.listen(process.env.PORT || 7000, () => {
   console.log(`Express running → PORT ${server.address().port}`);
 });
