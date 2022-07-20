@@ -1,0 +1,26 @@
+extends default
+block content
+		.form
+			h2 Add New Profile 
+			if(msg)
+				small=msg
+			//- feedback_form POST route
+			form(action="/feedback_form",method="POST",enctype="multipart/form-data")
+				label(for="firstname") First Name
+				input#firstname(type="text", name="firstname")
+				label(for="lastname") Last Name
+				input#lastname(type="text", name="lastname")
+				label(for="bio")  bio
+				textarea#bio(
+					name="bio",
+					cols="30", rows="2"
+				)
+				label(for="tagline") Tagline
+				input#tagline(type="text", name="tagline")
+				label(for="link") Linkedin
+				input#link(type="text", name="link")
+				label(for="id")  Id
+				input#id(type="text", name="id")
+				label(for="avatar") Avatar
+				input#avatar(type="file" name="avatar")
+				button(type="submit") Submit
